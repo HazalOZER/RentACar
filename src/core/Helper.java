@@ -1,6 +1,7 @@
 package core;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Helper {
     public static void setThere() {
@@ -27,11 +28,16 @@ public class Helper {
             case "done":
                 msg = "İşlem Başarılı";
                 title = "Sonuç";
+                break;
+            case "notFound" :
+                msg = "Kayıt Bulunamadı";
+                title = "Bulunamadı";
+                break;
             default:
                 msg = str;
                 title = "Mesaj";
         }
-        JOptionPane.showMessageDialog(null, str, title, JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, msg, title, JOptionPane.INFORMATION_MESSAGE);
 
     }
 
@@ -39,10 +45,18 @@ public class Helper {
         return field.getText().trim().isEmpty();
     }
 
-    public static boolean isFieldListEmty(JTextField[] fiekdList) {
-        for (JTextField field : fiekdList) {
+    public static boolean isFieldListEmty(JTextField[] fieldList) {
+        for (JTextField field : fieldList) {
             if (Helper.isFieldEmty(field)) return true;
         }
         return false;
+    }
+
+    public static int getLocationPoint(String type, Dimension size) {
+        return switch (type) {
+            case "x" -> ((Toolkit.getDefaultToolkit().getScreenSize().width) - (size.width)) / 2;
+            case "y" -> ((Toolkit.getDefaultToolkit().getScreenSize().height) - (size.height)) / 2;
+            default -> 0;
+        };
     }
 }

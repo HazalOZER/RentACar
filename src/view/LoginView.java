@@ -1,6 +1,8 @@
 package view;
 
+import business.UserManager;
 import core.Helper;
+import entity.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,19 +20,27 @@ public class LoginView extends JFrame {
     private JButton btn_login;
     private JLabel lnl_username;
     private JLabel lbl_pass;
+    private final UserManager userManager;
 
     public LoginView() {
+        this.userManager = new UserManager();
         this.add(container);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setTitle("Rent A Car");
         this.setSize(400, 400);
-        int x = ((Toolkit.getDefaultToolkit().getScreenSize().width) - (this.getSize().width)) / 2;
-        int y = ((Toolkit.getDefaultToolkit().getScreenSize().height) - (this.getSize().height)) / 2;
-        this.setLocation(x, y);
+        this.setLocation(Helper.getLocationPoint("x",this.getSize()),Helper.getLocationPoint("y",this.getSize()));
         this.setVisible(true);
         btn_login.addActionListener(e -> {
-            if (Helper.isFieldEmty(this.fld_username) || Helper.isFieldEmty(this.fld_pass)) {
+            JTextField [] checkFieldList = {this.fld_username,this.fld_pass};
+            if (Helper.isFieldListEmty(checkFieldList)) {
                 Helper.showMsg("fill");
+            }else {
+                User loginUser = this.userManager.findByLogin(this.fld_username.getText(),this.fld_pass.getText());
+                if(loginUser == null){
+                    Helper.showMsg("notFound");
+                }else {
+                    System.out.println(loginUser.toString());
+                }
             }
 
         });
