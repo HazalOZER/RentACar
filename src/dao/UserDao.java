@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserDao {
+
     private final Connection con;
 
     public UserDao() {
@@ -22,7 +23,7 @@ public class UserDao {
         try {
             ResultSet rs = this.con.createStatement().executeQuery(sql);
             while (rs.next()) {
-                User obj = this.match(rs);
+                userList.add(this.match(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
