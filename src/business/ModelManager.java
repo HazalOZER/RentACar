@@ -38,7 +38,7 @@ public class ModelManager {
         return modelObjList;
     }
     public boolean save (Model model){
-        if (this.getById(model.getId()) == null){
+        if (this.getById(model.getId()) != null){
             Helper.showMsg("error");
             return false;
         }
@@ -58,6 +58,9 @@ public class ModelManager {
             return false;
         }
         return this.modelDao.delete(id);
+    }
+    public ArrayList<Model> getByListBrandId(int brandId){
+        return this.modelDao.getByListBrandId(brandId);
     }
 }
 

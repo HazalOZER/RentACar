@@ -39,6 +39,9 @@ public class ModelDao {
 
         return this.selectByQuery("SELECT * FROM public.model ORDER BY model_id ASC");
     }
+    public ArrayList<Model> getByListBrandId(int brandId){
+        return this.selectByQuery("SELECT * FROM public.model WHERE model_brand_id = "+brandId);
+    }
 
     public ArrayList<Model> selectByQuery(String query) {
         ArrayList<Model> modelList = new ArrayList<>();
@@ -61,7 +64,7 @@ public class ModelDao {
                 "model_type, " +
                 "model_year, " +
                 "model_fuel, " +
-                "model_gear, " +
+                "model_gear " +
                 ")" +
                 " VALUES (?,?,?,?,?,?)";
         try {
@@ -82,11 +85,11 @@ public class ModelDao {
 
     public boolean update(Model model) {
         String query = "UPDATE public.model SET " +
-                "model_brand_id = ? " +
-                "model_name = ? " +
-                "model_type = ? " +
-                "model_year = ? " +
-                "model_fuel = ? " +
+                "model_brand_id = ? , " +
+                "model_name = ? , " +
+                "model_type = ? , " +
+                "model_year = ? , " +
+                "model_fuel = ? , " +
                 "model_gear = ? " +
                 "WHERE model_id = ?";
         try {

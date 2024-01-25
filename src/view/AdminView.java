@@ -3,12 +3,11 @@ package view;
 import business.BrandManager;
 import business.ModelManager;
 import core.Helper;
+import entity.Model;
 import entity.User;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -29,8 +28,8 @@ public class AdminView extends Layout {
     private DefaultTableModel tmdl_model = new DefaultTableModel();
     private BrandManager brandManager;
     private ModelManager modelManager;
-    private JPopupMenu brandMenu;
-    private JPopupMenu modelMenu;
+    private JPopupMenu brand_menu;
+    private JPopupMenu model_menu;
 
     public AdminView(User user) {
         this.brandManager = new BrandManager();
@@ -49,9 +48,49 @@ public class AdminView extends Layout {
         loadBrandComponent();
 
         loadModelTable();
+        loadModelComponent();
+
+    }
+
+    private void loadModelComponent() {
         tableRowSelect(this.tbl_model);
 
+        this.model_menu = new JPopupMenu();
 
+        this.model_menu.add("Yeni").addActionListener(e -> {
+            ModelView modelView = new ModelView( new Model());
+            modelView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadModelTable();
+                }
+            });
+        });
+        this.model_menu.add("Güncelle").addActionListener(e -> {
+            int selectModelId = this.getTableSelectedRow(tbl_model, 0);
+            ModelView modelView = new ModelView(this.modelManager.getById(selectModelId));
+            modelView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadModelTable();
+                }
+            });
+
+        });
+        this.model_menu.add("Sil").addActionListener(e -> {
+
+            if (Helper.confirm("sure")) {
+                int selectModelId = this.getTableSelectedRow(tbl_model, 0);
+                if (this.modelManager.delete(selectModelId)) {
+                    Helper.showMsg("done");
+                    loadModelTable();
+                } else {
+                    Helper.showMsg("error");
+                }
+            }
+
+        });
+        this.tbl_model.setComponentPopupMenu(this.model_menu);
     }
 
     private void loadModelTable() {
@@ -73,40 +112,43 @@ public class AdminView extends Layout {
 
         tableRowSelect(this.tbl_brand);
 
-        this.brandMenu = new JPopupMenu();
-        this.brandMenu.add("Yeni").addActionListener(e -> {
+        this.brand_menu = new JPopupMenu();
+        this.brand_menu.add("Yeni").addActionListener(e -> {
             BrandView brandView = new BrandView(null);
             brandView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     loadBrandTable();
+                    loadModelTable();
                 }
             });
         });
-        this.brandMenu.add("Güncelle").addActionListener(e -> {
+        this.brand_menu.add("Güncelle").addActionListener(e -> {
             int selectBrandId = this.getTableSelectedRow(tbl_brand, 0);
             BrandView brandView = new BrandView(this.brandManager.getById(selectBrandId));
             brandView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     loadBrandTable();
+                    loadModelTable();
                 }
             });
 
         });
-        this.brandMenu.add("Sil").addActionListener(e -> {
+        this.brand_menu.add("Sil").addActionListener(e -> {
             if (Helper.confirm("sure")) {
                 int selectBrandId = this.getTableSelectedRow(tbl_brand, 0);
                 if (this.brandManager.delete(selectBrandId)) {
                     Helper.showMsg("done");
                     loadBrandTable();
+                    loadModelTable();
                 } else {
                     Helper.showMsg("error");
                 }
             }
 
         });
-        this.tbl_brand.setComponentPopupMenu(this.brandMenu);
+        this.tbl_brand.setComponentPopupMenu(this.brand_menu);
     }
 
 
