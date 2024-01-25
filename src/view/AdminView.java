@@ -1,8 +1,8 @@
 package view;
 
 import business.BrandManager;
+import business.ModelManager;
 import core.Helper;
-import entity.Brand;
 import entity.User;
 
 import javax.swing.*;
@@ -17,18 +17,24 @@ public class AdminView extends Layout {
     private JPanel container;
     private JLabel lbl_welcome;
     private JPanel pnl_top;
-    private JTabbedPane tab_menu;
+    private JTabbedPane pnl_model;
     private JButton btn_logout;
     private JPanel pnl_brand;
     private JScrollPane scl_brand;
     private JTable tbl_brand;
+    private JScrollPane scrl_model;
+    private JTable tbl_model;
     private User user;
     private DefaultTableModel tmdl_brand = new DefaultTableModel();
+    private DefaultTableModel tmdl_model = new DefaultTableModel();
     private BrandManager brandManager;
+    private ModelManager modelManager;
     private JPopupMenu brandMenu;
+    private JPopupMenu modelMenu;
 
     public AdminView(User user) {
         this.brandManager = new BrandManager();
+        this.modelManager = new ModelManager();
         this.add(container);
         this.guiInitilaze(1000, 500);
         this.user = user;
@@ -42,25 +48,31 @@ public class AdminView extends Layout {
         loadBrandTable();
         loadBrandComponent();
 
+        loadModelTable();
+        tableRowSelect(this.tbl_model);
 
-        this.tbl_brand.setComponentPopupMenu(this.brandMenu);
 
     }
+
+    private void loadModelTable() {
+        Object[] col_model = {"Model ID", "Marka", "Model Adı", "Tip", "Yıl", "Yakıt Türü", "Vites"};
+        ArrayList<Object[]> modelList = this.modelManager.getForTable(col_model.length, this.modelManager.findAll());
+        createTable(this.tmdl_model, this.tbl_model, col_model, modelList);
+
+    }
+
     public void loadBrandTable() {
 
         Object[] col_brand = {"Marka ID", "Marka Adı"};
         ArrayList<Object[]> brandList = this.brandManager.getForTable(col_brand.length);
-        this.createTable(this.tmdl_brand,this.tbl_brand,col_brand,brandList);
+        this.createTable(this.tmdl_brand, this.tbl_brand, col_brand, brandList);
 
     }
+
     private void loadBrandComponent() {
-        this.tbl_brand.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int selected_row = tbl_brand.rowAtPoint(e.getPoint());
-                tbl_brand.setRowSelectionInterval(selected_row, selected_row);
-            }
-        });
+
+        tableRowSelect(this.tbl_brand);
+
         this.brandMenu = new JPopupMenu();
         this.brandMenu.add("Yeni").addActionListener(e -> {
             BrandView brandView = new BrandView(null);
@@ -72,7 +84,7 @@ public class AdminView extends Layout {
             });
         });
         this.brandMenu.add("Güncelle").addActionListener(e -> {
-            int selectBrandId =this.getTableSelectedRow(tbl_brand,0);
+            int selectBrandId = this.getTableSelectedRow(tbl_brand, 0);
             BrandView brandView = new BrandView(this.brandManager.getById(selectBrandId));
             brandView.addWindowListener(new WindowAdapter() {
                 @Override
@@ -83,17 +95,18 @@ public class AdminView extends Layout {
 
         });
         this.brandMenu.add("Sil").addActionListener(e -> {
-            if(Helper.confirm("sure")) {
+            if (Helper.confirm("sure")) {
                 int selectBrandId = this.getTableSelectedRow(tbl_brand, 0);
-                if(this.brandManager.delete(selectBrandId)){
+                if (this.brandManager.delete(selectBrandId)) {
                     Helper.showMsg("done");
                     loadBrandTable();
-                }else {
+                } else {
                     Helper.showMsg("error");
                 }
             }
 
         });
+        this.tbl_brand.setComponentPopupMenu(this.brandMenu);
     }
 
 

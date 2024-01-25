@@ -52,6 +52,12 @@ public class ModelManager {
         return this.modelDao.update(model);
     }
 
-
+    public boolean delete(int id){
+        if (this.getById(id) == null){
+            Helper.showMsg(id+" ID kayıtlı marka bulunamadı");
+            return false;
+        }
+        return this.modelDao.delete(id);
+    }
 }
 
