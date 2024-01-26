@@ -2,7 +2,9 @@ package view;
 
 import business.BrandManager;
 import business.ModelManager;
+import core.ComboItem;
 import core.Helper;
+import entity.Brand;
 import entity.Model;
 import entity.User;
 
@@ -23,6 +25,11 @@ public class AdminView extends Layout {
     private JTable tbl_brand;
     private JScrollPane scrl_model;
     private JTable tbl_model;
+    private JComboBox cmb_s_model_brand;
+    private JComboBox<Model.Type> cmb_s_model_type;
+    private JComboBox<Model.Fuel> cmb_s_model_fuel;
+    private JComboBox<Model.Gear> cmb_s_model_gear;
+    private JButton btn_search_model;
     private User user;
     private DefaultTableModel tmdl_brand = new DefaultTableModel();
     private DefaultTableModel tmdl_model = new DefaultTableModel();
@@ -49,8 +56,10 @@ public class AdminView extends Layout {
 
         loadModelTable();
         loadModelComponent();
+        loadModelFilter();
 
     }
+
 
     private void loadModelComponent() {
         tableRowSelect(this.tbl_model);
@@ -58,7 +67,7 @@ public class AdminView extends Layout {
         this.model_menu = new JPopupMenu();
 
         this.model_menu.add("Yeni").addActionListener(e -> {
-            ModelView modelView = new ModelView( new Model());
+            ModelView modelView = new ModelView(new Model());
             modelView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
@@ -91,13 +100,47 @@ public class AdminView extends Layout {
 
         });
         this.tbl_model.setComponentPopupMenu(this.model_menu);
+
+
+        this.btn_search_model.addActionListener(e -> {
+            ComboItem selectedBrand = (ComboItem) this.cmb_s_model_brand.getSelectedItem();
+            ArrayList <Model> modelListBySearch = this.modelManager.searchForTable(
+                    selectedBrand.getKey(),
+                    (Model.Fuel) cmb_s_model_fuel.getSelectedItem(),
+                    (Model.Gear) cmb_s_model_gear.getSelectedItem(),
+                    (Model.Type) cmb_s_model_type.getSelectedItem()
+            );
+            System.out.println(modelListBySearch);///////////////////////////////
+        });
     }
 
-    private void loadModelTable() {
+    private void loadModelTable(ArrayList <Object []> modelList) {
         Object[] col_model = {"Model ID", "Marka", "Model Adı", "Tip", "Yıl", "Yakıt Türü", "Vites"};
-        ArrayList<Object[]> modelList = this.modelManager.getForTable(col_model.length, this.modelManager.findAll());
+        if (modelList == null) {
+
+        modelList = this.modelManager.getForTable(col_model.length, this.modelManager.findAll());
+        }
         createTable(this.tmdl_model, this.tbl_model, col_model, modelList);
 
+    }
+
+    private void loadModelFilter() {
+        this.cmb_s_model_type.setModel(new DefaultComboBoxModel<>(Model.Type.values()));
+        this.cmb_s_model_fuel.setModel(new DefaultComboBoxModel<>(Model.Fuel.values()));
+        this.cmb_s_model_gear.setModel(new DefaultComboBoxModel<>(Model.Gear.values()));
+
+        this.cmb_s_model_type.setSelectedItem(null);
+        this.cmb_s_model_fuel.setSelectedItem(null);
+        this.cmb_s_model_gear.setSelectedItem(null);
+        loadModelFilterBrand();
+    }
+
+    public void loadModelFilterBrand() {
+        this.cmb_s_model_brand.removeAllItems();
+        for (Brand obj : brandManager.findAll()) {
+            this.cmb_s_model_brand.addItem(new ComboItem(obj.getId(), obj.getName()));
+        }
+        this.cmb_s_model_brand.setSelectedItem(null);
     }
 
     public void loadBrandTable() {
@@ -120,6 +163,7 @@ public class AdminView extends Layout {
                 public void windowClosed(WindowEvent e) {
                     loadBrandTable();
                     loadModelTable();
+                    loadModelFilterBrand();
                 }
             });
         });
@@ -131,6 +175,8 @@ public class AdminView extends Layout {
                 public void windowClosed(WindowEvent e) {
                     loadBrandTable();
                     loadModelTable();
+                    loadModelFilterBrand();
+
                 }
             });
 
@@ -142,6 +188,8 @@ public class AdminView extends Layout {
                     Helper.showMsg("done");
                     loadBrandTable();
                     loadModelTable();
+                    loadModelFilterBrand();
+
                 } else {
                     Helper.showMsg("error");
                 }
