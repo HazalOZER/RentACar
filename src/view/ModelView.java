@@ -52,8 +52,7 @@ public class ModelView extends Layout {
             } else {
                 boolean result;
 
-
-                ComboItem selectedBrand = (ComboItem) cmb_brand.getSelectedItem();
+                ComboItem selectedBrand = (ComboItem) this.cmb_brand.getSelectedItem();
 
                 this.model.setYear(fld_model_year.getText());
                 this.model.setName(fld_model_name.getText());
