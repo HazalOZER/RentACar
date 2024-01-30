@@ -40,7 +40,7 @@ public class CarDao {
         return this.selectByQuery("SELECT * FROM public.car ORDER BY car_id ASC ");
     }
 
-    private ArrayList<Car> selectByQuery(String query) {
+    public ArrayList<Car> selectByQuery(String query) {
         ArrayList<Car> cars = new ArrayList<>();
         try {
             ResultSet rs = this.con.createStatement().executeQuery(query);
